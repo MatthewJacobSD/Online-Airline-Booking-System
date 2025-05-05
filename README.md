@@ -622,6 +622,7 @@ CREATE TABLE bookings (
 );
 ```
 3. Import CSV files into the respective tables using the following command:
+   * be aware that you would need to add 'local' between the load data and infile(e.g. load data *local* infile....)
 
 ```mariadb
 LOAD DATA INFILE '/path/to/customers.csv'
