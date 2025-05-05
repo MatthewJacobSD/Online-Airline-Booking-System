@@ -545,21 +545,6 @@ Relationships:
 - Customer -> Make Booking
 - Customer -> View Flights
 - Admin -> Add Customer, Add Flight, Add Route, View Flights
-Actors:
-- Customer
-- Admin
-
-Use Cases:
-- Add Customer (Admin)
-- Make Booking (Customer)
-- View Flights (Customer, Admin)
-- Add Flight (Admin)
-- Add Route (Admin)
-
-Relationships:
-- Customer -> Make Booking
-- Customer -> View Flights
-- Admin -> Add Customer, Add Flight, Add Route, View Flights
 ```
 ---
 
