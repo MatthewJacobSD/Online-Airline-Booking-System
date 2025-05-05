@@ -10,12 +10,14 @@ import io.github.MatthewJacobSD.utils.CSVHandler;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class SBooking extends BaseService<Booking> {
-    public SBooking(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI) {
-        super(scanner, fileHandler, consoleUI, "Booking", "bookings.csv", Booking.class);
+    public SBooking(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI,
+                        Map<String, String> referenceFilePaths) {
+        super(scanner, fileHandler, consoleUI, "Booking", "bookings.csv", Booking.class, referenceFilePaths);
     }
 
     @Override
@@ -134,11 +136,6 @@ public class SBooking extends BaseService<Booking> {
         }
 
         // Validate flight ID
-        String flightError = Validator.validateUUID(booking.getFlightId());
-        if (flightError != null) {
-            return flightError;
-        }
-
-        return null;
+        return Validator.validateUUID(booking.getFlightId());
     }
 }

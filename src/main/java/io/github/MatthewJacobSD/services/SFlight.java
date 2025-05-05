@@ -8,14 +8,15 @@ import io.github.MatthewJacobSD.utils.Validator;
 import io.github.MatthewJacobSD.utils.CSVHandler;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class SFlight extends BaseService<Flight> {
-    public SFlight(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI) {
-        super(scanner, fileHandler, consoleUI, "Flight", "flights.csv", Flight.class);
+    public SFlight(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI,
+                   Map<String, String> referenceFilePaths) {
+        super(scanner, fileHandler, consoleUI, "Flight", "flights.csv", Flight.class, referenceFilePaths);
     }
 
     @Override

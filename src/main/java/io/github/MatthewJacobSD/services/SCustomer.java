@@ -5,12 +5,14 @@ import io.github.MatthewJacobSD.utils.ConsoleUI;
 import io.github.MatthewJacobSD.utils.FileHandler;
 import io.github.MatthewJacobSD.utils.Validator;
 
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class SCustomer extends BaseService<Customer> {
     public SCustomer(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI) {
-        super(scanner, fileHandler, consoleUI, "Customer", "customers.csv", Customer.class);
+        super(scanner, fileHandler, consoleUI, "Customer", "customers.csv", Customer.class,
+                Map.of()); // No references needed for customers
     }
 
     // the new customer method overrides the abstract method in BaseService

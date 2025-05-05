@@ -1,10 +1,8 @@
 package io.github.MatthewJacobSD.utils;
 
-import io.github.MatthewJacobSD.services.SBooking;
-import io.github.MatthewJacobSD.services.SCustomer;
-import io.github.MatthewJacobSD.services.SFlight;
-import io.github.MatthewJacobSD.services.SRoute;
+import io.github.MatthewJacobSD.services.*;
 
+import java.util.Map;
 import java.util.Scanner;
 
 public class ServiceRouter {
@@ -14,9 +12,21 @@ public class ServiceRouter {
     private final SRoute sRoute;
 
     public ServiceRouter(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI) {
+        // Customer service doesn't need references
         this.sCustomer = new SCustomer(scanner, fileHandler, consoleUI);
-        this.sBooking = new SBooking(scanner, fileHandler, consoleUI);
-        this.sFlight = new SFlight(scanner, fileHandler, consoleUI);
+
+        // Booking service needs customer and flight references
+        Map<String, String> bookingRefs = Map.of(
+                "customers", "customers.csv",
+                "flights", "flights.csv"
+        );
+        this.sBooking = new SBooking(scanner, fileHandler, consoleUI, bookingRefs);
+
+        // Flight service needs route references
+        Map<String, String> flightRefs = Map.of("routes", "routes.csv");
+        this.sFlight = new SFlight(scanner, fileHandler, consoleUI, flightRefs);
+
+        // Route service doesn't need references
         this.sRoute = new SRoute(scanner, fileHandler, consoleUI);
     }
 

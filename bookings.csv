@@ -1,2 +1,2 @@
-id,date
-b6776b8e-a024-4add-8cd7-c3ab9b399bd5,2025-05-15
+id,date,customerId,flightId
+143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2,2025-05-06,aada4f8f-4d00-40c8-8fbc-e4ae296e1290,a8e1b03e-693a-4d29-827c-6a896da2f9db

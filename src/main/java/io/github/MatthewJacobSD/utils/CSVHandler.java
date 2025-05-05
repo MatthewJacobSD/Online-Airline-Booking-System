@@ -59,14 +59,18 @@ public class CSVHandler {
     }
 
     private static String formatValue(Object value) {
-        if (value == null) {
-            return "";
-        }
-        if (value instanceof LocalDate date) {
-            return date.format(DATE_FORMATTER);
-        }
-        if (value instanceof LocalDateTime dateTime) {
-            return dateTime.format(DATETIME_FORMATTER);
+        switch (value) {
+            case null -> {
+                return "";
+            }
+            case LocalDate date -> {
+                return date.format(DATE_FORMATTER);
+            }
+            case LocalDateTime dateTime -> {
+                return dateTime.format(DATETIME_FORMATTER);
+            }
+            default -> {
+            }
         }
         String strValue = value.toString().replace("\"", "\"\"");
         if (strValue.contains(",") || strValue.contains("\"") || strValue.contains("\n")) {
@@ -255,7 +259,18 @@ public class CSVHandler {
             field.append(c);
         }
 
+        // Add the last field
         values.add(field.toString().trim());
+
+        // Remove any empty trailing fields
+        while (!values.isEmpty() && values.getLast().isEmpty()) {
+            values.removeLast();
+        }
+
         return values.toArray(new String[0]);
+    }
+
+    public static String[] parseHeaders(String headerLine) throws Exception {
+        return parseCSVLine(headerLine);
     }
 }

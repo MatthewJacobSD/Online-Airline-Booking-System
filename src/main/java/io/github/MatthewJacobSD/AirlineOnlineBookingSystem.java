@@ -1,9 +1,6 @@
 package io.github.MatthewJacobSD;
 
-import io.github.MatthewJacobSD.utils.ConsoleUI;
-import io.github.MatthewJacobSD.utils.FileHandler;
-import io.github.MatthewJacobSD.utils.ServiceRouter;
-
+import io.github.MatthewJacobSD.utils.*;
 import java.util.Scanner;
 
 public class AirlineOnlineBookingSystem {
@@ -13,7 +10,6 @@ public class AirlineOnlineBookingSystem {
         FileHandler fileHandler = new FileHandler(consoleUI);
         ServiceRouter router = new ServiceRouter(scanner, fileHandler, consoleUI);
 
-        // Show a welcome message
         while (true) {
             consoleUI.showMainMenu();
             int choice = consoleUI.getUserChoice();

@@ -1,2 +1,2 @@
-id,flightNo,depAirport,arrAirport,depTime,arrTime
-cf34e289-5f59-426d-908c-c8901d9c986b,AA123,JKF,LAX,2025-09-30 22:30,2025-10-05 10:00
+id,flightNo,depAirport,arrAirport,depTime,arrTime,routeId
+a8e1b03e-693a-4d29-827c-6a896da2f9db,LSX894,ABN,MIL,2025-05-10 10:00,2025-05-11 16:40,963247f7-1fc9-412f-bc21-ab02d075022e

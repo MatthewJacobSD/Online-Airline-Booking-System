@@ -170,6 +170,353 @@ mvn clean compile exec:java
 3. Create flights using those routes
 4. Book customers onto flights
 
+
+## 📝 Example output
+```text
+C:\Users\emerd\.jdks\openjdk-24\bin\java.exe "-javaagent:C:\Users\emerd\AppData\Local\Programs\IntelliJ IDEA Ultimate\lib\idea_rt.jar=53417" -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -classpath "C:\Users\emerd\IdeaProjects\college\Distinction Projects\aobs\target\classes;C:\Users\emerd\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar" io.github.MatthewJacobSD.AirlineOnlineBookingSystem
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 1
+
+Customer Data Menu
+――――――――――――――――――
+1. Read customer data
+2. Write customer data
+3. Return to main menu
+• 🔄 Choose an option: 
+1
+
+Read Customer Data
+――――――――――――――――――
+• 📂 Enter file path (e.g., customers.csv): 
+customers.csv
+• ⏳ Loading customer data...
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: customers.csv
+✓ ✅ Successfully read 2 lines
+
+Customer Data
+―――――――――――――
+📋 Customer 
+{
+id: aada4f8f-4d00-40c8-8fbc-e4ae296e1290,
+ firstName: MatthewJacob,
+ lastName: SD,
+ email: matthewjacobsd@xample.com,
+ phoneNo: 145729257,
+ address: george street st micheal 26
+}
+
+Customer Data Menu
+――――――――――――――――――
+1. Read customer data
+2. Write customer data
+3. Return to main menu
+• 🔄 Choose an option: 
+3
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 2
+
+Booking Data Menu
+―――――――――――――――――
+1. Read booking data
+2. Write booking data
+3. Return to main menu
+• 🔄 Choose an option: 
+1
+
+Read Booking Data
+―――――――――――――――――
+• 📂 Enter file path (e.g., bookings.csv): 
+bookings.csv
+• ⏳ Loading booking data...
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: bookings.csv
+✓ ✅ Successfully read 0 lines
+
+Booking Data Menu
+―――――――――――――――――
+1. Read booking data
+2. Write booking data
+3. Return to main menu
+• 🔄 Choose an option: 
+✗ File is empty
+✗ Invalid CSV structure for Booking
+3
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 3
+
+Flight Data Menu
+――――――――――――――――
+1. Read flight data
+2. Write flight data
+3. Return to main menu
+• 🔄 Choose an option: 
+1
+
+Read Flight Data
+――――――――――――――――
+• 📂 Enter file path (e.g., flights.csv): 
+flights.csv
+• ⏳ Loading flight data...
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: flights.csv
+✓ ✅ Successfully read 2 lines
+
+Flight Data
+―――――――――――
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: routes.csv
+✓ ✅ Successfully read 2 lines
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: routes.csv
+✓ ✅ Successfully read 2 lines
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: routes.csv
+✓ ✅ Successfully read 2 lines
+📋 Flight 
+{
+id: a8e1b03e-693a-4d29-827c-6a896da2f9db,
+ flightNo: LSX894,
+ depAirport: ABN,
+ arrAirport: MIL,
+ depTime: 2025-05-10 10:00,
+ arrTime: 2025-05-11 16:40,
+ routeId: 963247f7-1fc9-412f-bc21-ab02d075022e}
+
+
+Flight Data Menu
+――――――――――――――――
+1. Read flight data
+2. Write flight data
+3. Return to main menu
+• 🔄 Choose an option: 
+3
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 4
+
+Route Data Menu
+―――――――――――――――
+1. Read route data
+2. Write route data
+3. Return to main menu
+• 🔄 Choose an option: 
+1
+
+Read Route Data
+―――――――――――――――
+• 📂 Enter file path (e.g., routes.csv): 
+routes.csv
+• ⏳ Loading route data...
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: routes.csv
+✓ ✅ Successfully read 2 lines
+
+Route Data
+――――――――――
+📋 Route 
+{
+id: 963247f7-1fc9-412f-bc21-ab02d075022e,
+ name: SCO-ITA
+}
+
+
+Route Data Menu
+―――――――――――――――
+1. Read route data
+2. Write route data
+3. Return to main menu
+• 🔄 Choose an option: 
+3
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 2
+
+Booking Data Menu
+―――――――――――――――――
+1. Read booking data
+2. Write booking data
+3. Return to main menu
+• 🔄 Choose an option: 
+2
+
+Save Booking Data
+―――――――――――――――――
+• 📂 Enter save path (e.g., bookings.csv): 
+bookings.csv
+• ➕ Add bookings (press enter after each, blank line to finish):
+
+Add New Booking
+―――――――――――――――
+• 📛 Auto-generated ID: 143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2
+• 📅 Enter booking date (yyyy-MM-dd): 
+2025-05-06
+• 🧑 Enter customer ID: 
+aada4f8f-4d00-40c8-8fbc-e4ae296e1290
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: customers.csv
+✓ ✅ Successfully read 2 lines
+• ✈️ Enter flight ID: 
+a8e1b03e-693a-4d29-827c-6a896da2f9db
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: flights.csv
+✓ ✅ Successfully read 2 lines
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: customers.csv
+✓ ✅ Successfully read 2 lines
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: flights.csv
+✓ ✅ Successfully read 2 lines
+• ➕ Add another booking? (y/n): 
+n
+• 📋 Entities to save: 1
+• • Booking 
+{
+id: 143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2,
+ date: 2025-05-06,
+ customerId: aada4f8f-4d00-40c8-8fbc-e4ae296e1290,
+ flightId: a8e1b03e-693a-4d29-827c-6a896da2f9db
+}
+• 🔄 Append to existing file? (y/n, append adds to existing data): 
+y
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: bookings.csv
+✓ ✅ Successfully read 0 lines
+• ⏳ Saving booking data...
+
+CSV Export
+――――――――――
+• Generated CSV preview (first 5 lines):
+━━━━━━━━━━━━━━━━━━━━
+│ id,date,customerId,flightId
+│ 143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2,2025-05-06,aada4f8f-4d00-40c8-8fbc-e4ae296e1290,a8e1b03e-693a-4d29-827c-6a896da2f9db
+━━━━━━━━━━━━━━━━━━━━
+• 📋 CSV content length: 150 characters
+Proceed with saving? (y/n): y
+
+Writing File
+――――――――――――
+• 📄 Existing file detected: 0 bytes
+✓ ✅ Successfully wrote 150 characters
+✓ Booking data saved successfully!
+
+Saved Booking Data
+――――――――――――――――――
+📋 Booking 
+{
+id: 143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2,
+ date: 2025-05-06,
+ customerId: aada4f8f-4d00-40c8-8fbc-e4ae296e1290,
+ flightId: a8e1b03e-693a-4d29-827c-6a896da2f9db
+}
+• 📄 Check bookings.csv for saved data
+
+Booking Data Menu
+―――――――――――――――――
+1. Read booking data
+2. Write booking data
+3. Return to main menu
+• 🔄 Choose an option: 
+1
+
+Read Booking Data
+―――――――――――――――――
+• 📂 Enter file path (e.g., bookings.csv): 
+bookings.csv
+• ⏳ Loading booking data...
+
+Reading File
+――――――――――――
+• ⏳ Attempting to read: bookings.csv
+✓ ✅ Successfully read 2 lines
+
+Booking Data
+――――――――――――
+📋 Booking 
+{
+id: 143c20d3-b2a1-4a0a-90dc-b5d495bb0ee2,
+ date: 2025-05-06,
+ customerId: aada4f8f-4d00-40c8-8fbc-e4ae296e1290,
+ flightId: a8e1b03e-693a-4d29-827c-6a896da2f9db
+}
+
+Booking Data Menu
+―――――――――――――――――
+1. Read booking data
+2. Write booking data
+3. Return to main menu
+• 🔄 Choose an option: 
+3
+
+✈️ Airline Online Booking System
+━━━━━━━━━━━━━━━━━━━━━━━
+1. Manage Customer Data
+2. Manage Booking Data
+3. Manage Flight Data
+4. Manage Route Data
+5. Exit
+🔄 Choose an option: 5
+👋 Exiting system. Goodbye!
+
+Process finished with exit code 0
+```
 ---
 
 ## 🧠 Design Patterns
@@ -252,7 +599,6 @@ Route
 
 ## 🗄️ MariaDB Import Instructions(MariaDB example)
 1. Create a new database in MariaDB. (set the data source to mariaDB, or any other database you want to use)
-```mariadb
 2. Run the following SQL commands to create tables:
 
 ```mariadb

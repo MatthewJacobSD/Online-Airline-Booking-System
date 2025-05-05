@@ -1,16 +1,14 @@
 package io.github.MatthewJacobSD.services;
 
+import io.github.MatthewJacobSD.models.Booking;
+import io.github.MatthewJacobSD.models.Flight;
 import io.github.MatthewJacobSD.utils.ConsoleUI;
 import io.github.MatthewJacobSD.utils.FileHandler;
 import io.github.MatthewJacobSD.utils.CSVHandler;
+import io.github.MatthewJacobSD.utils.ReferenceValidator;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public abstract class BaseService<T> {
@@ -20,14 +18,18 @@ public abstract class BaseService<T> {
     protected final String entityName;
     protected final String csvFileName;
     protected final Class<T> entityClass;
+    protected final ReferenceValidator referenceValidator;
 
-    public BaseService(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI, String entityName, String csvFileName, Class<T> entityClass) {
+    public BaseService(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI,
+                       String entityName, String csvFileName, Class<T> entityClass,
+                       Map<String, String> referenceFilePaths) {
         this.scanner = scanner;
         this.fileHandler = fileHandler;
         this.consoleUI = consoleUI;
         this.entityName = entityName;
         this.csvFileName = csvFileName;
         this.entityClass = entityClass;
+        this.referenceValidator = new ReferenceValidator(fileHandler, consoleUI, referenceFilePaths);
     }
 
     // Abstract method to add a new entity
@@ -51,10 +53,37 @@ public abstract class BaseService<T> {
         consoleUI.showStatus("⏳ Loading " + entityName.toLowerCase() + " data...");
         String content = fileHandler.readFile(path);
 
-        // Check content if is empty or none
+        // Add CSV structure validation
+        if (!validateCSVStructure(content)) {
+            consoleUI.showError("Invalid CSV structure for " + entityName);
+            return;
+        }
+
         if (content != null && !content.isEmpty()) {
             consoleUI.showSectionHeader(entityName + " Data");
             List<T> objects = CSVHandler.fromCSV(content, entityClass, this);
+
+            // Add reference validation for each object
+            // Alternative version with positive validation
+            objects.removeIf(obj -> {
+                // Entity validation
+                String validationError = validateEntity(obj);
+                if (validationError != null) {
+                    consoleUI.showError("Invalid " + entityName + ": " + validationError);
+                    return true;
+                }
+
+                // Reference validation
+                if (obj instanceof Flight || obj instanceof Booking) {
+                    boolean referencesValid = validateReferences(obj);
+                    if (!referencesValid) {
+                        consoleUI.showError("Invalid references in " + entityName);
+                        return true;
+                    }
+                }
+                return false;
+            });
+
             if (objects.isEmpty()) {
                 consoleUI.showError("No valid " + entityName.toLowerCase() + " data found.");
             } else {
@@ -65,6 +94,55 @@ public abstract class BaseService<T> {
         }
     }
 
+    protected boolean validateReferences(T entity) {
+        if (entity instanceof Flight flight) {
+            return referenceValidator.validateReference("routes", flight.getRouteId());
+        }
+        else if (entity instanceof Booking booking) {
+            return referenceValidator.validateReference("customers", booking.getCustomerId())
+                    && referenceValidator.validateReference("flights", booking.getFlightId());
+        }
+        return true;
+    }
+
+    protected boolean validateCSVStructure(String content) {
+        if (content == null || content.isEmpty()) {
+            consoleUI.showError("File is empty");
+            return false;
+        }
+
+        String[] lines = content.split("\n");
+        if (lines.length < 1) {
+            consoleUI.showError("No headers found");
+            return false;
+        }
+
+        try {
+            // Parse headers from the first line
+            String[] headers = CSVHandler.parseHeaders(lines[0]);
+
+            // Get all declared fields including inherited ones
+            List<String> fieldNames = new ArrayList<>();
+            Class<?> currentClass = entityClass;
+            while (currentClass != null) {
+                Arrays.stream(currentClass.getDeclaredFields())
+                        .map(Field::getName)
+                        .forEach(fieldNames::add);
+                currentClass = currentClass.getSuperclass();
+            }
+
+            if (!new HashSet<>(Arrays.asList(headers)).containsAll(fieldNames)) {
+                consoleUI.showError("Missing fields. Expected: " + fieldNames + ", found: " + Arrays.toString(headers));
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            consoleUI.showError("Error parsing CSV headers: " + e.getMessage());
+            return false;
+        }
+    }
+
+
     // Writes entity data
     public void write() {
         consoleUI.showSectionHeader("Save " + entityName + " Data");
@@ -74,7 +152,7 @@ public abstract class BaseService<T> {
         consoleUI.showStatus("➕ Add " + entityName.toLowerCase() + "s (press enter after each, blank line to finish):");
         Set<T> entities = new LinkedHashSet<>(); // Use Set to prevent duplicates
 
-        do { // validation loop per entity added
+        do {
             T entity = addEntity();
             String validationError = validateEntity(entity);
             if (validationError != null) {
@@ -90,6 +168,17 @@ public abstract class BaseService<T> {
                     continue;
                 }
             }
+
+            // Add reference validation
+            if (entity instanceof Flight || entity instanceof Booking) {
+                if (!validateReferences(entity)) {
+                    consoleUI.showError("Invalid references in " + entityName);
+                    consoleUI.showStatus("➕ Try adding " + entityName.toLowerCase() + " again? (y/n): ");
+                    scanner.nextLine();
+                    continue;
+                }
+            }
+
             entities.add(entity);
             consoleUI.showStatus("➕ Add another " + entityName.toLowerCase() + "? (y/n): ");
         } while (scanner.nextLine().trim().equalsIgnoreCase("y"));
@@ -139,12 +228,21 @@ public abstract class BaseService<T> {
                     try {
                         Field idField = obj.getClass().getDeclaredField("id");
                         idField.setAccessible(true);
-                        return (String) idField.get(obj);
+                        Object idValue = idField.get(obj);
+                        return idValue != null ? idValue.toString() : null;
                     } catch (Exception e) {
                         return null;
                     }
                 })
                 .filter(Objects::nonNull)
+                .filter(id -> {
+                    try {
+                        UUID.fromString(id);
+                        return true;
+                    } catch (IllegalArgumentException e) {
+                        return false;
+                    }
+                })
                 .toList();
     }
 

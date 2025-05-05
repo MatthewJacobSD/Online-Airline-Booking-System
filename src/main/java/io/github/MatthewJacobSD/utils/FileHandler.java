@@ -60,11 +60,14 @@ public class FileHandler {
         ui.showStatus(file.exists() ? "📄 Existing file detected: " + file.length() + " bytes" : "📄 No existing file");
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, append))) {
+            // Add newline if appending to existing file
+            if (append && file.exists() && file.length() > 0) {
+                writer.newLine();
+            }
             writer.write(content);
             if (!content.endsWith("\n")) {
                 writer.newLine();
-            }
-            ui.showSuccess("✅ Successfully wrote " + content.length() + " characters");
+            }    ui.showSuccess("✅ Successfully wrote " + content.length() + " characters");
             return true;
         } catch (IOException e) {
             ui.showError("Error writing to file: " + e.getMessage());

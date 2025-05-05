@@ -5,12 +5,14 @@ import io.github.MatthewJacobSD.utils.ConsoleUI;
 import io.github.MatthewJacobSD.utils.FileHandler;
 import io.github.MatthewJacobSD.utils.Validator;
 
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class SRoute extends BaseService<Route> {
     public SRoute(Scanner scanner, FileHandler fileHandler, ConsoleUI consoleUI) {
-        super(scanner, fileHandler, consoleUI, "Route", "routes.csv", Route.class);
+        super(scanner, fileHandler, consoleUI, "Route", "routes.csv", Route.class,
+                Map.of()); // no references needed for routes
     }
 
     // the new route method overrides the abstract method in BaseService
@@ -50,6 +52,10 @@ public class SRoute extends BaseService<Route> {
         String uuidError = Validator.validateUUID(route.getId());
         if (uuidError != null) {
             return uuidError;
+        }
+
+        if (route.getName() == null || route.getName().trim().isEmpty()) {
+            return "Route name cannot be empty.";
         }
 
         return Validator.validateRouteName(route.getName());
