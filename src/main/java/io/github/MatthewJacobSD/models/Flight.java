@@ -1,5 +1,7 @@
 package io.github.MatthewJacobSD.models;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Flight {
@@ -8,25 +10,23 @@ public class Flight {
     private String flightNo;
     private String depAirport;
     private String arrAirport;
-    private String depTime;
-    private String arrTime;
+    private LocalDateTime depTime;
+    private LocalDateTime arrTime;
+    private String routeId;
 
     // default constructor
     public Flight() {}
 
     // constructor with parameters
-    public Flight(String id,
-                  String flightNo,
-                  String depAirport,
-                  String arrAirport,
-                  String depTime,
-                  String arrTime) {
+    public Flight(String id, String flightNo, String depAirport, String arrAirport,
+                  LocalDateTime depTime, LocalDateTime arrTime, String routeId) {
         this.id = id;
         this.flightNo = flightNo;
         this.depAirport = depAirport;
         this.arrAirport = arrAirport;
         this.depTime = depTime;
         this.arrTime = arrTime;
+        this.routeId = routeId;
     }
 
     // getters
@@ -34,15 +34,17 @@ public class Flight {
     public String getFlightNo() { return flightNo; }
     public String getDepAirport() { return depAirport; }
     public String getArrAirport() { return arrAirport; }
-    public String getDepTime() { return depTime; }
-    public String getArrTime() { return arrTime; }
+    public LocalDateTime getDepTime() { return depTime; }
+    public LocalDateTime getArrTime() { return arrTime; }
+    public String getRouteId() { return routeId; }
 
     // setters
     public void setFlightNo(String flightNo) { this.flightNo = flightNo; }
-    public void setDepAirport(String depAirport){ this.depAirport = depAirport; }
+    public void setDepAirport(String depAirport) { this.depAirport = depAirport; }
     public void setArrAirport(String arrAirport) { this.arrAirport = arrAirport; }
-    public void setDepTime(String depTime) { this.depTime = depTime; }
-    public void setArrTime(String arrTime) { this.arrTime = arrTime; }
+    public void setDepTime(LocalDateTime depTime) { this.depTime = depTime; }
+    public void setArrTime(LocalDateTime arrTime) { this.arrTime = arrTime; }
+    public void setRouteId(String routeId) { this.routeId = routeId; }
 
     /**
      * Converts a flight object into a human-readable string.
@@ -51,12 +53,15 @@ public class Flight {
      *
      * @return A string representation of the flight.
      */
-    // output method
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return String.format(
-                "Flight \n{\nid: %s,\n flightNo: %s,\n depAirport: %s,\n arrAirport: %s,\n depTime: %s,\n arrTime: %s\n}\n",
-                id, flightNo, depAirport, arrAirport, depTime, arrTime);
+                "Flight \n{\nid: %s,\n flightNo: %s,\n depAirport: %s,\n arrAirport: %s,\n depTime: %s,\n arrTime: %s,\n routeId: %s}\n",
+                id, flightNo, depAirport, arrAirport,
+                depTime != null ? depTime.format(formatter) : "null",
+                arrTime != null ? arrTime.format(formatter) : "null",
+                routeId);
     }
 
     /**

@@ -25,6 +25,5 @@ public class AirlineOnlineBookingSystem {
             }
             router.route(choice);
         }
-
     }
 }

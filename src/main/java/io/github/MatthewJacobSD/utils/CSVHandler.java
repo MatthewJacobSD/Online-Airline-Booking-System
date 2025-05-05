@@ -15,50 +15,31 @@ import static io.github.MatthewJacobSD.utils.Validator.DATETIME_FORMATTER;
 
 public class CSVHandler {
 
-    /**
-     * Converts a list of objects to CSV format.
-     * @param objects List of objects to convert.
-     * @return CSV formatted string.
-     */
     public static String toCSV(List<?> objects) {
         if (objects == null || objects.isEmpty()) {
             return "";
         }
         StringBuilder csvContent = new StringBuilder();
-        processObject(objects.getFirst(), csvContent, true); // Headers only
-        objects.forEach(obj -> processObject(obj, csvContent, false)); // Data rows
+        processObject(objects.getFirst(), csvContent, true);
+        objects.forEach(obj -> processObject(obj, csvContent, false));
         return csvContent.toString();
     }
 
-    /**
-     * Processes an object into CSV format.
-     * @param obj The object to process.
-     * @param csvContent StringBuilder to append the result to.
-     * @param includeHeader Whether to include the header row.
-     */
     private static void processObject(Object obj, StringBuilder csvContent, boolean includeHeader) {
         try {
             Class<?> objClass = obj.getClass();
             Field[] fields = objClass.getDeclaredFields();
 
             if (includeHeader) {
-                appendFields(fields, csvContent, true, null); // Headers only
+                appendFields(fields, csvContent, true, null);
             } else {
-                appendFields(fields, csvContent, false, obj); // Data row
+                appendFields(fields, csvContent, false, obj);
             }
         } catch (Exception e) {
             System.err.println("❌ Error processing object: " + e.getMessage());
         }
     }
 
-    /**
-     * Appends fields to the CSV content.
-     * @param fields Array of fields to process.
-     * @param builder StringBuilder to append to.
-     * @param isHeader Whether we're processing headers.
-     * @param obj The object to get values from (null if isHeader).
-     * @throws IllegalAccessException If field access fails.
-     */
     private static void appendFields(Field[] fields, StringBuilder builder,
                                      boolean isHeader, Object obj)
             throws IllegalAccessException {
@@ -77,40 +58,23 @@ public class CSVHandler {
         }
     }
 
-    /**
-     * Formats a value for CSV (quotes strings, formats dates).
-     * @param value The value to format.
-     * @return Formatted string.
-     */
     private static String formatValue(Object value) {
-        switch (value) {
-            case null -> {
-                return "";
-            }
-            case LocalDate date -> {
-                return date.format(DATE_FORMATTER);
-            }
-            case LocalDateTime dateTime -> {
-                return dateTime.format(DATETIME_FORMATTER);
-            }
-            default -> {
-            }
+        if (value == null) {
+            return "";
         }
-        String strValue = value.toString();
-        strValue = strValue.replace("\"", "\"\"");
-        if (strValue.contains(",") || strValue.contains("\"")) {
+        if (value instanceof LocalDate date) {
+            return date.format(DATE_FORMATTER);
+        }
+        if (value instanceof LocalDateTime dateTime) {
+            return dateTime.format(DATETIME_FORMATTER);
+        }
+        String strValue = value.toString().replace("\"", "\"\"");
+        if (strValue.contains(",") || strValue.contains("\"") || strValue.contains("\n")) {
             return "\"" + strValue + "\"";
         }
         return strValue;
     }
 
-    /**
-     * Parses a CSV string into a list of objects of the specified class.
-     * @param csvContent The CSV string to parse.
-     * @param clazz The class type to instantiate (e.g., Customer.class).
-     * @param service The BaseService to validate parsed objects (nullable).
-     * @return A list of parsed objects.
-     */
     public static <T> List<T> fromCSV(String csvContent, Class<T> clazz, BaseService<T> service) {
         List<T> objects = new ArrayList<>();
         if (csvContent == null || csvContent.trim().isEmpty()) {
@@ -122,18 +86,15 @@ public class CSVHandler {
             return objects;
         }
 
-        // Extract headers from the first line
         String[] headers = parseCSVLine(lines[0]);
         Field[] fields = clazz.getDeclaredFields();
 
-        // Validate headers match field names
         List<String> fieldNames = Arrays.stream(fields).map(Field::getName).toList();
         if (!Arrays.stream(headers).allMatch(fieldNames::contains)) {
             System.err.println("❌ CSV headers do not match class fields. Expected: " + fieldNames + ", Found: " + Arrays.toString(headers));
             return objects;
         }
 
-        // Process data lines (skip header)
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i].trim();
             if (line.isEmpty()) {
@@ -148,14 +109,6 @@ public class CSVHandler {
         return objects;
     }
 
-    /**
-     * Parses a single CSV line into an object.
-     * @param line The CSV line.
-     * @param headers The CSV headers.
-     * @param clazz The class type to instantiate.
-     * @param service The BaseService to validate the object (nullable).
-     * @return The parsed object or null if parsing fails.
-     */
     private static <T> T parseLine(String line, String[] headers, Class<T> clazz, BaseService<T> service) {
         try {
             String[] values = parseCSVLine(line);
@@ -194,7 +147,6 @@ public class CSVHandler {
                 }
             }
 
-            // Validate the entire object using BaseService
             if (service != null) {
                 String entityError = service.isValidEntity(instance);
                 if (entityError != null) {
@@ -210,16 +162,9 @@ public class CSVHandler {
         }
     }
 
-    /**
-     * Validates a field value before setting it.
-     * @param field The field to validate.
-     * @param value The string value to validate.
-     * @param className The name of the class for error messages.
-     * @return Validation error message or null if valid.
-     */
     private static String validateFieldValue(Field field, String value, String className) {
         if (value.isEmpty()) {
-            return null; // Null values are allowed
+            return null;
         }
 
         String fieldName = field.getName();
@@ -266,12 +211,6 @@ public class CSVHandler {
         return null;
     }
 
-    /**
-     * Sets a field value on an object, handling type conversion.
-     * @param instance The object to set the field on.
-     * @param field The field to set.
-     * @param value The string value to parse.
-     */
     private static void setFieldValue(Object instance, Field field, String value) throws IllegalAccessException {
         if (value.isEmpty()) {
             field.set(instance, null);
@@ -294,11 +233,6 @@ public class CSVHandler {
         }
     }
 
-    /**
-     * Parses a CSV line, handling quoted fields and commas.
-     * @param line The CSV line to parse.
-     * @return An array of field values.
-     */
     private static String[] parseCSVLine(String line) {
         List<String> values = new ArrayList<>();
         boolean inQuotes = false;
@@ -321,7 +255,6 @@ public class CSVHandler {
             field.append(c);
         }
 
-        // Add the last field
         values.add(field.toString().trim());
         return values.toArray(new String[0]);
     }

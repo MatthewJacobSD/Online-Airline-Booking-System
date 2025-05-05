@@ -75,11 +75,11 @@ src/
 All fields go through strict validation:
 
 | Field           | Rules                                              |
-| --------------- | -------------------------------------------------- |
+|-----------------|----------------------------------------------------|
 | UUID            | Auto-generated, must be valid                      |
 | Dates           | Must be today or within 1 year (`yyyy-MM-dd`)      |
 | Flight Number   | 2–6 alphanumeric characters (e.g., `AA123`)        |
-| Airport Codes   | 3 uppercase letters (e.g., `JFK`)                  |
+| Airport Codes   | 2-6 uppercase letters (e.g., `JFK`)                |
 | Route Name      | Format `XXX-YYY` (e.g., `JFK-LAX`)                 |
 | Email           | Must follow email format (e.g., `user@domain.com`) |
 | Phone Number    | 7–15 digits only                                   |
@@ -94,6 +94,7 @@ All fields go through strict validation:
 * Java JDK 17+
 * Maven (recommended build tool)
 * IDE or terminal (IntelliJ, Eclipse, etc.)
+* MariaDB (for database import)
 
 ### 📦 Installation
 
@@ -124,7 +125,7 @@ mvn clean compile exec:java
 ## 💻 Usage Guide
 
 1. **Launch the App**
-   You'll see a main menu with options to manage Customers, Bookings, Flights, Routes, or Exit.
+   * You'll see a main menu with options to manage Customers, Bookings, Flights, Routes, or Exit.
 
 2. **Manage Data**
 
@@ -133,7 +134,7 @@ mvn clean compile exec:java
    * Save changes (append or overwrite)
 
 3. **Interactive Input**
-   The console walks you through entering each field, with real-time validation.
+   * The console walks you through entering each field, with real-time validation.
 
 ### ✈️ Example: Add a Flight
 
@@ -144,6 +145,9 @@ mvn clean compile exec:java
    * Flight Number: `AA123`
    * Departure: `JFK`
    * Arrival: `LAX`
+   * Departure Time: 2025-05-04 14:30
+   * Arrival Time: 2025-05-04 17:45
+   * Route ID: (valid UUID from routes.csv)
 4. Save — it's added to `flights.csv`
 
 ---
@@ -151,7 +155,7 @@ mvn clean compile exec:java
 ## 📂 Default CSV Files
 
 | File            | Description       |
-| --------------- | ----------------- |
+|-----------------|-------------------|
 | `customers.csv` | Customer records  |
 | `bookings.csv`  | Flight bookings   |
 | `flights.csv`   | Flight info       |
@@ -175,6 +179,148 @@ mvn clean compile exec:java
 * **Dependency Injection** – Pass dependencies cleanly
 * **Builder Pattern** – Used during entity creation with validation
 
+---
+
+## 📄 Use Case Diagram
+```text
+Actors:
+- Customer
+- Admin
+
+Use Cases:
+- Add Customer (Admin)
+- Make Booking (Customer)
+- View Flights (Customer, Admin)
+- Add Flight (Admin)
+- Add Route (Admin)
+
+Relationships:
+- Customer -> Make Booking
+- Customer -> View Flights
+- Admin -> Add Customer, Add Flight, Add Route, View Flights
+Actors:
+- Customer
+- Admin
+
+Use Cases:
+- Add Customer (Admin)
+- Make Booking (Customer)
+- View Flights (Customer, Admin)
+- Add Flight (Admin)
+- Add Route (Admin)
+
+Relationships:
+- Customer -> Make Booking
+- Customer -> View Flights
+- Admin -> Add Customer, Add Flight, Add Route, View Flights
+```
+---
+
+## 📊 Class Diagram
+```text
+Customer
+- customerId: String
+- firstName: String
+- lastName: String
+- email: String
+- phone: String
+- address: String
+
+Booking
+- bookingId: String
+- bookingDate: LocalDate
+- customerId: String
+- flightId: String
++ Association: Booking -> Customer (customerId)
++ Association: Booking -> Flight (flightId)
+
+Flight
+- flightId: String
+- flightNumber: String
+- departureAirport: String
+- arrivalAirport: String
+- departureDateTime: LocalDateTime
+- arrivalDateTime: LocalDateTime
+- routeId: String
++ Association: Flight -> Route (routeId)
+
+Route
+- routeId: String
+- routeName: String
+```
+---
+
+## 🗄️ MariaDB Import Instructions(MariaDB example)
+1. Create a new database in MariaDB. (set the data source to mariaDB, or any other database you want to use)
+```mariadb
+2. Run the following SQL commands to create tables:
+
+```mariadb
+CREATE TABLE customers (
+    id VARCHAR(36) PRIMARY KEY,
+    firstName VARCHAR(255),
+    lastName VARCHAR(255),
+    email VARCHAR(255),
+    phoneNo VARCHAR(15),
+    address TEXT
+);
+
+CREATE TABLE routes (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(7)
+);
+
+CREATE TABLE flights (
+    id VARCHAR(36) PRIMARY KEY,
+    flightNo VARCHAR(6),
+    depAirport CHAR(3),
+    arrAirport CHAR(3),
+    depTime DATETIME,
+    arrTime DATETIME,
+    routeId VARCHAR(36),
+    FOREIGN KEY (routeId) REFERENCES routes(id)
+);
+
+CREATE TABLE bookings (
+    id VARCHAR(36) PRIMARY KEY,
+    date DATE,
+    customerId VARCHAR(36),
+    flightId VARCHAR(36),
+    FOREIGN KEY (customerId) REFERENCES customers(id),
+    FOREIGN KEY (flightId) REFERENCES flights(id)
+);
+```
+3. Import CSV files into the respective tables using the following command:
+
+```mariadb
+LOAD DATA INFILE '/path/to/customers.csv'
+INTO TABLE customers
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+LOAD DATA INFILE '/path/to/routes.csv'
+INTO TABLE routes
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+LOAD DATA INFILE '/path/to/flights.csv'
+INTO TABLE flights
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+
+LOAD DATA INFILE '/path/to/bookings.csv'
+INTO TABLE bookings
+FIELDS TERMINATED BY ',' ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+```
+4. Adjust the file paths and ensure MariaDB has file permissions.
+5. Run the commands in your MariaDB client.
+6. Verify the data is imported correctly by running `SELECT * FROM table_name;`.
+7. You can now use the application to manage bookings and flights.
 ---
 
 ## 📜 License

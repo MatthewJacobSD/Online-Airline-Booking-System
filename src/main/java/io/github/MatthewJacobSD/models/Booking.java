@@ -8,22 +8,30 @@ public class Booking {
     // private fields
     private String id;
     private LocalDate date;
+    private String customerId;
+    private String flightId;
 
     // no args constructor
     public Booking() {}
 
     // constructor with parameters
-    public Booking(String id, LocalDate date) {
+    public Booking(String id, LocalDate date, String customerId, String flightId) {
         this.id = id;
         this.date = date;
+        this.customerId = customerId;
+        this.flightId = flightId;
     }
 
     // getters
     public String getId() { return id; }
     public LocalDate getDate() { return date; }
+    public String getCustomerId() { return customerId; }
+    public String getFlightId() { return flightId; }
 
-    // setter
+    // setters
     public void setDate(LocalDate date) { this.date = date; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    public void setFlightId(String flightId) { this.flightId = flightId; }
 
     /**
      * Output method.
@@ -34,11 +42,10 @@ public class Booking {
      */
     @Override
     public String toString() {
-        // format date for csv transition
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return String.format("Booking \n{\nid: %s,\n date: %s\n}", id, date.format(formatter));
+        return String.format("Booking \n{\nid: %s,\n date: %s,\n customerId: %s,\n flightId: %s\n}",
+                id, date.format(formatter), customerId, flightId);
     }
-
 
     /**
      * Indicates whether some other object is "equal to" this one.

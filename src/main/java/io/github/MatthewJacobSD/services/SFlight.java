@@ -1,12 +1,15 @@
 package io.github.MatthewJacobSD.services;
 
 import io.github.MatthewJacobSD.models.Flight;
+import io.github.MatthewJacobSD.models.Route;
 import io.github.MatthewJacobSD.utils.ConsoleUI;
 import io.github.MatthewJacobSD.utils.FileHandler;
 import io.github.MatthewJacobSD.utils.Validator;
+import io.github.MatthewJacobSD.utils.CSVHandler;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -15,7 +18,6 @@ public class SFlight extends BaseService<Flight> {
         super(scanner, fileHandler, consoleUI, "Flight", "flights.csv", Flight.class);
     }
 
-    // the new flight method overrides the abstract method in BaseService
     @Override
     protected Flight addEntity() {
         consoleUI.showSectionHeader("Add New Flight");
@@ -56,7 +58,6 @@ public class SFlight extends BaseService<Flight> {
             depAirport = input;
         }
 
-        // Prompt for arrival airport, with validation
         String arrAirport = null;
         while (arrAirport == null) {
             consoleUI.showStatus("🛬 Enter arrival airport (3-letter code, e.g., LAX): ");
@@ -74,7 +75,7 @@ public class SFlight extends BaseService<Flight> {
         }
 
         // Prompt for departure and arrival times, with validation
-        String depTime = null;
+        LocalDateTime depTime = null;
         while (depTime == null) {
             consoleUI.showStatus("🕒 Enter departure time (e.g., 2025-05-04 14:30): ");
             String input = scanner.nextLine().trim();
@@ -87,11 +88,10 @@ public class SFlight extends BaseService<Flight> {
                 }
                 continue;
             }
-            depTime = input;
+            depTime = LocalDateTime.parse(input, Validator.DATETIME_FORMATTER);
         }
 
-        // Prompt for arrival time, with validation
-        String arrTime = null;
+        LocalDateTime arrTime = null;
         while (arrTime == null) {
             consoleUI.showStatus("🕒 Enter arrival time (e.g., 2025-05-04 17:45): ");
             String input = scanner.nextLine().trim();
@@ -104,9 +104,8 @@ public class SFlight extends BaseService<Flight> {
                 }
                 continue;
             }
-            LocalDateTime depDateTime = LocalDateTime.parse(depTime, Validator.DATETIME_FORMATTER);
             LocalDateTime arrDateTime = LocalDateTime.parse(input, Validator.DATETIME_FORMATTER);
-            if (!arrDateTime.isAfter(depDateTime)) {
+            if (!arrDateTime.isAfter(depTime)) {
                 consoleUI.showError("Arrival time must be after departure time.");
                 consoleUI.showStatus("🕒 Try again? (y/n): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("y")) {
@@ -114,13 +113,44 @@ public class SFlight extends BaseService<Flight> {
                 }
                 continue;
             }
-            arrTime = input;
+            arrTime = arrDateTime;
         }
 
-        return new Flight(id, flightNo, depAirport, arrAirport, depTime, arrTime);
+        // Prompt for route ID, with validation
+        String routeId = null;
+        while (routeId == null) {
+            consoleUI.showStatus("🛤️ Enter route ID: ");
+            String input = scanner.nextLine().trim();
+            String error = Validator.validateUUID(input);
+            if (error != null) {
+                consoleUI.showError(error);
+                consoleUI.showStatus("🛤️ Try again? (y/n): ");
+                if (!scanner.nextLine().trim().equalsIgnoreCase("y")) {
+                    return null;
+                }
+                continue;
+            }
+            String content = fileHandler.readFile("routes.csv");
+            if (content != null && !content.isEmpty()) {
+                List<Route> routes = CSVHandler.fromCSV(content, Route.class, null);
+                if (routes.stream().noneMatch(r -> r.getId().equals(input))) {
+                    consoleUI.showError("Route ID does not exist in routes.csv.");
+                    consoleUI.showStatus("🛤️ Try again? (y/n): ");
+                    if (!scanner.nextLine().trim().equalsIgnoreCase("y")) {
+                        return null;
+                    }
+                    continue;
+                }
+            } else {
+                consoleUI.showError("No routes found in routes.csv.");
+                return null;
+            }
+            routeId = input;
+        }
+
+        return new Flight(id, flightNo, depAirport, arrAirport, depTime, arrTime, routeId);
     }
 
-    // return null if the flight is invalid
     @Override
     protected String validateEntity(Flight flight) {
         if (flight == null) {
@@ -151,24 +181,38 @@ public class SFlight extends BaseService<Flight> {
             return "Departure and arrival airports cannot be the same.";
         }
 
-        String depTimeError = Validator.validateDateTime(flight.getDepTime(), "Departure time");
+        String depTimeError = Validator.validateDateTime(
+                flight.getDepTime() != null ? flight.getDepTime().format(Validator.DATETIME_FORMATTER) : null,
+                "Departure time");
         if (depTimeError != null) {
             return depTimeError;
         }
 
-        String arrTimeError = Validator.validateDateTime(flight.getArrTime(), "Arrival time");
+        String arrTimeError = Validator.validateDateTime(
+                flight.getArrTime() != null ? flight.getArrTime().format(Validator.DATETIME_FORMATTER) : null,
+                "Arrival time");
         if (arrTimeError != null) {
             return arrTimeError;
         }
 
-        try {
-            LocalDateTime depDateTime = LocalDateTime.parse(flight.getDepTime(), Validator.DATETIME_FORMATTER);
-            LocalDateTime arrDateTime = LocalDateTime.parse(flight.getArrTime(), Validator.DATETIME_FORMATTER);
-            if (!arrDateTime.isAfter(depDateTime)) {
-                return "Arrival time must be after departure time.";
+        if (flight.getArrTime() != null && flight.getDepTime() != null &&
+                !flight.getArrTime().isAfter(flight.getDepTime())) {
+            return "Arrival time must be after departure time.";
+        }
+
+        String routeError = Validator.validateUUID(flight.getRouteId());
+        if (routeError != null) {
+            return routeError;
+        }
+
+        String content = fileHandler.readFile("routes.csv");
+        if (content != null && !content.isEmpty()) {
+            List<Route> routes = CSVHandler.fromCSV(content, Route.class, null);
+            if (routes.stream().noneMatch(r -> r.getId().equals(flight.getRouteId()))) {
+                return "Route ID does not exist in routes.csv.";
             }
-        } catch (DateTimeParseException e) {
-            return "Invalid datetime format in flight.";
+        } else {
+            return "No routes found in routes.csv.";
         }
 
         return null;
